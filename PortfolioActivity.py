@@ -1402,33 +1402,36 @@ class PortfolioActivity(activity.Activity):
             self.text_entry.hide()
 
         if self._selected_spr is not None:
-            slide = self._slides[self.i]
-            if self._selected_spr.type == 'title':
-                slide.title = self._selected_spr.labels[0]
-                if self.initiating is not None and self.initiating:
-                    self._send_event('t', {"data": (self._data_dumper(
-                        [slide.uid, slide.title]))})
-                slide.dirty = True
-            elif self._selected_spr.type == 'description':
-                slide.description = self._selected_spr.labels[0]
-                if self.initiating is not None:
-                    self._send_event('d', {"data": (
-                        self._data_dumper([slide.uid, slide.description]))})
-                slide.dirty = True
-            elif self._selected_spr.type == 'comment':
-                message = self._selected_spr.labels[0]
-                if message != '':
-                    slide.comment.append({'from': profile.get_nick_name(),
-                                          'message': message,
-                                          # Use my colors in case of sharing
-                                          'icon-color': '[%s,%s]' % (
-                        self._my_colors[0], self._my_colors[1])})
-                    if self.initiating is not None:
-                        self._send_event('c', {"data": (self._data_dumper(
-                            [slide.uid, slide.comment]))})
-                    self._comment.set_label(parse_comments(slide.comment))
-                    self._selected_spr.set_label('')
+            try:
+                slide = self._slides[self.i]
+                if self._selected_spr.type == 'title':
+                    slide.title = self._selected_spr.labels[0]
+                    if self.initiating is not None and self.initiating:
+                        self._send_event('t', {"data": (self._data_dumper(
+                            [slide.uid, slide.title]))})
                     slide.dirty = True
+                elif self._selected_spr.type == 'description':
+                    slide.description = self._selected_spr.labels[0]
+                    if self.initiating is not None:
+                        self._send_event('d', {"data": (
+                            self._data_dumper([slide.uid, slide.description]))})
+                    slide.dirty = True
+                elif self._selected_spr.type == 'comment':
+                    message = self._selected_spr.labels[0]
+                    if message != '':
+                        slide.comment.append({'from': profile.get_nick_name(),
+                                              'message': message,
+                                              # Use my colors in case of sharing
+                                              'icon-color': '[%s,%s]' % (
+                            self._my_colors[0], self._my_colors[1])})
+                        if self.initiating is not None:
+                            self._send_event('c', {"data": (self._data_dumper(
+                            [slide.uid, slide.comment]))})
+                        self._comment.set_label(parse_comments(slide.comment))
+                        self._selected_spr.set_label('')
+                        slide.dirty = True
+            except IndexError:
+                self.i = 0
         self._selected_spr = None
         self._saved_string = ''
 
